@@ -14,6 +14,9 @@ BOT_NAME = 'poem_spider'
 SPIDER_MODULES = ['poem_spider.spiders']
 NEWSPIDER_MODULE = 'poem_spider.spiders'
 
+LOG_LEVEL = 'WARNING'  # 日志输出级别
+LOG_FILE = './scrapy_log.log'  # 日志输出路径
+LOG_ENCODING = 'utf-8'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'poem_spider (+http://www.yourdomain.com)'

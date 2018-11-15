@@ -7,6 +7,8 @@
 
 from scrapy.exceptions import DropItem
 import os
+import logging
+logger = logging.getLogger(__name__)
 
 
 class PoemSpiderPipeline(object):
@@ -28,27 +30,36 @@ class PoemSpiderPipeline(object):
             os.mkdir(self.search_path)
 
     def process_item(self, item, spider):
+        logger.warning(item)  # 写入日志
+
         if item:
-            # print('item：', item)
-            if item['f_type'] == 'shiren':
-                file_name = str(self.author_path + item['file_name'])  # 写入诗人文件夹
-                with open(file_name, 'w') as fw:
-                    fw.write(item['source_code'][0])
-
-            else:
-                file_name = str(self.poesy_path + item['file_name'])
-                with open(file_name, 'w') as fw:
-                    fw.write(item['source_code'][0])
-                return item
-
-            #  写入搜索文件夹
             try:
-                file_name = str(self.search_path + item['name'] + '_' + item['search_index'] + '.html')
+                file_name = str(self.author_path + item['file_name'].split('.')[0] + '.txt')  # 写入诗人文件夹
+                # 写入诗人文件夹
+                with open(file_name, 'w') as fw:
+                    fw.write(item['author_info'])
+                    fw.write('\n')
+                    fw.write('\n')
+                    fw.write(item['author_article_set_title'] + '\n')
+                    fw.write('\n')
+                    fw.write(item['author_article_set'])
+                    fw.write('\n')
+                    fw.write(item['author_famous_poem_set_title'])
+                    fw.write('\n')
+                    fw.write(item['author_famous_poem_set'])
+
+                #  写入搜索文件夹
+                file_name = str(self.search_path + item['author_name'] + '_' + item['search_index'] + '.html')
                 with open(file_name, 'w') as fw:
                     fw.write(item['search_source_code'][0])
                 return item
             except Exception as e:
-                pass
+                del e
+                # 写入古诗文件夹
+                file_name = str(self.poesy_path + item['poem_file_name'] + '.txt')
+                with open(file_name, 'w') as fw:
+                    fw.write(item['poem_content'])
+                return item
         else:
             raise DropItem("Missing item in %s" % item)
 
